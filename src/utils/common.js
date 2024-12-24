@@ -122,3 +122,26 @@ export function timeFormat(timeDate, fmt = 'yyyy-MM-dd hh:mm:ss') {
       fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length));
   return fmt;
 }
+
+// 先给要复制的文本或者按钮加上点击事件后，并将要复制的值传过来
+export async function copyValue(val) {
+  if (navigator.clipboard && window.isSecureContext) {
+    // navigator clipboard 向剪贴板写文本
+    this.$message.success('复制成功');
+    return navigator.clipboard.writeText(val);
+  } else {
+    // 创建text area
+    const textArea = document.createElement('textarea');
+    textArea.value = val;
+    // 使text area不在viewport，同时设置不可见
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    this.$message.success('复制成功');
+    return new Promise((res, rej) => {
+      // 执行复制命令并移除文本框
+      document.execCommand('copy') ? res() : rej();
+      textArea.remove();
+    });
+  }
+}
